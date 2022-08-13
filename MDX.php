@@ -17,6 +17,10 @@ class MDX implements iMDX
      * @var array
      */
     private array $dimensions;
+    /**
+     * @var array
+     */
+    private array $tuple;
 
     /**
      * @param string $nameCube
@@ -80,16 +84,44 @@ class MDX implements iMDX
      */
     public function generateQuery(): string
     {
+        $rows = "";
+        if (!empty($this->dimensions)) {
+            $rows = $this->getDimensions();
+        }
+        if (!empty($this->tuple)) {
+            $rows = $this->getTuple();
+        }
+
         $query = "SELECT\n";
         if (!empty($this->measures)) {
             $query .= "\t{$this->getMeasures()} ON COLUMNS";
         }
-        if (!empty($this->dimensions)) {
+        if ($rows != "") {
             $query .= ",\n";
-            $query .= "\t{$this->getDimensions()} ON ROWS\n";
+            $query .= "\t$rows ON ROWS\n";
         }
         $query .= "FROM {$this->getNameCube()}";
 
         return $query;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTuple(): string
+    {
+        if (count($this->tuple) > 1) {
+            return "{" . implode(", ", $this->tuple) . "}";
+        }
+        return $this->tuple[0];
+    }
+
+    /**
+     * @param array $tuple
+     */
+    public function setTuple(array $tuple): MDX
+    {
+        $this->tuple = $tuple;
+        return $this;
     }
 }

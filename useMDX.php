@@ -6,6 +6,6 @@ $mdx = new MDX();
 
 $mdx->setNameCube("[Sales]")
     ->setMeasures(["[Measures].[Amount]"])
-    ->setDimensions(["[Product].[Product].[Name]", "[Date].[Year]"]);
+    ->setTuple(["[Product].[Product].[Name].&[Носок]", "[Product].[Product].[Name].&[Валенок]"]);
 
 echo $mdx->generateQuery();
