@@ -1,6 +1,6 @@
 <?php
 
-include 'iMDX.php';
+include_once 'iMDX.php';
 
 class MDX implements iMDX
 {
@@ -10,16 +10,17 @@ class MDX implements iMDX
      */
     private string $nameCube;
     /**
-     * @var array
+     * @var Expression
      */
-    private array $measures;
+    private Expression $columns;
     /**
-     * @var array
+     * @var Expression
      */
-    private array $dimensions;
+    private Expression $rows;
 
     /**
      * @param string $nameCube
+     * @return MDX
      */
     public function setNameCube(string $nameCube): MDX
     {
@@ -28,20 +29,22 @@ class MDX implements iMDX
     }
 
     /**
-     * @param array $measures
+     * @param Expression $expression
+     * @return MDX
      */
-    public function setMeasures(array $measures): MDX
+    public function setColumns(Expression $expression): MDX
     {
-        $this->measures = $measures;
+        $this->columns = $expression;
         return $this;
     }
 
     /**
-     * @param array $dimensions
+     * @param Expression $expression
+     * @return MDX
      */
-    public function setDimensions(array $dimensions): MDX
+    public function setRows(Expression $expression): MDX
     {
-        $this->dimensions = $dimensions;
+        $this->rows = $expression;
         return $this;
     }
 
@@ -56,17 +59,18 @@ class MDX implements iMDX
     /**
      * @return string
      */
-    public function getMeasures(): string
+    public function getColumns(): string
     {
-        return implode(", ", $this->measures);
+        return $this->columns->getString();
     }
+
 
     /**
      * @return string
      */
-    public function getDimensions(): string
+    public function getRows(): string
     {
-        return implode(", ", $this->dimensions);
+        return $this->rows->getString();
     }
 
     /**
@@ -75,15 +79,16 @@ class MDX implements iMDX
     public function generateQuery(): string
     {
         $query = "SELECT\n";
-        if (!empty($this->measures)) {
-            $query .= "\t{$this->getMeasures()} ON COLUMNS";
+        if (!empty($this->columns)) {
+            $query .= "\t{$this->getColumns()} ON COLUMNS";
         }
-        if (!empty($this->dimensions)) {
+        if (!empty($this->rows)) {
             $query .= ",\n";
-            $query .= "\t{$this->getDimensions()} ON ROWS\n";
+            $query .= "\t{$this->getRows()} ON ROWS\n";
         }
         $query .= "FROM {$this->getNameCube()}";
 
         return $query;
     }
+
 }
