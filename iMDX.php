@@ -2,17 +2,17 @@
 
 interface iMDX
 {
-    public function setNameCube(string $nameCube);
+    public function setNameCube(string $nameCube): MDX;
 
-    public function setMeasures(array $measures);
+    public function setColumns(Expression $expression): MDX;
 
-    public function setDimensions(array $dimensions);
+    public function setRows(Expression $expression): MDX;
 
-    public function getNameCube();
+    public function getNameCube(): string;
 
-    public function getMeasures();
+    public function getColumns(): string;
 
-    public function getDimensions();
+    public function getRows(): string;
 
-    public function generateQuery();
+    public function generateQuery(): string;
 }

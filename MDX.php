@@ -1,6 +1,6 @@
 <?php
 
-include 'iMDX.php';
+include_once 'iMDX.php';
 
 class MDX implements iMDX
 {
@@ -10,20 +10,17 @@ class MDX implements iMDX
      */
     private string $nameCube;
     /**
-     * @var array
+     * @var Expression
      */
-    private array $measures;
+    private Expression $columns;
     /**
-     * @var array
+     * @var Expression
      */
-    private array $dimensions;
-    /**
-     * @var array
-     */
-    private array $tuple;
+    private Expression $rows;
 
     /**
      * @param string $nameCube
+     * @return MDX
      */
     public function setNameCube(string $nameCube): MDX
     {
@@ -32,20 +29,22 @@ class MDX implements iMDX
     }
 
     /**
-     * @param array $measures
+     * @param Expression $expression
+     * @return MDX
      */
-    public function setMeasures(array $measures): MDX
+    public function setColumns(Expression $expression): MDX
     {
-        $this->measures = $measures;
+        $this->columns = $expression;
         return $this;
     }
 
     /**
-     * @param array $dimensions
+     * @param Expression $expression
+     * @return MDX
      */
-    public function setDimensions(array $dimensions): MDX
+    public function setRows(Expression $expression): MDX
     {
-        $this->dimensions = $dimensions;
+        $this->rows = $expression;
         return $this;
     }
 
@@ -60,23 +59,18 @@ class MDX implements iMDX
     /**
      * @return string
      */
-    public function getMeasures(): string
+    public function getColumns(): string
     {
-        if (count($this->measures) > 1) {
-            return "{" . implode(", ", $this->measures) . "}";
-        }
-        return $this->measures[0];
+        return $this->columns->getString();
     }
+
 
     /**
      * @return string
      */
-    public function getDimensions(): string
+    public function getRows(): string
     {
-        if (count($this->dimensions) > 1) {
-            return "{" . implode(", ", $this->dimensions) . "}";
-        }
-        return $this->dimensions[0];
+        return $this->rows->getString();
     }
 
     /**
@@ -84,44 +78,17 @@ class MDX implements iMDX
      */
     public function generateQuery(): string
     {
-        $rows = "";
-        if (!empty($this->dimensions)) {
-            $rows = $this->getDimensions();
-        }
-        if (!empty($this->tuple)) {
-            $rows = $this->getTuple();
-        }
-
         $query = "SELECT\n";
-        if (!empty($this->measures)) {
-            $query .= "\t{$this->getMeasures()} ON COLUMNS";
+        if (!empty($this->columns)) {
+            $query .= "\t{$this->getColumns()} ON COLUMNS";
         }
-        if ($rows != "") {
+        if (!empty($this->rows)) {
             $query .= ",\n";
-            $query .= "\t$rows ON ROWS\n";
+            $query .= "\t{$this->getRows()} ON ROWS\n";
         }
         $query .= "FROM {$this->getNameCube()}";
 
         return $query;
     }
 
-    /**
-     * @return string
-     */
-    public function getTuple(): string
-    {
-        if (count($this->tuple) > 1) {
-            return "{" . implode(", ", $this->tuple) . "}";
-        }
-        return $this->tuple[0];
-    }
-
-    /**
-     * @param array $tuple
-     */
-    public function setTuple(array $tuple): MDX
-    {
-        $this->tuple = $tuple;
-        return $this;
-    }
 }
