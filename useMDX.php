@@ -5,7 +5,7 @@ include 'MDX.php';
 $mdx = new MDX();
 
 $mdx->setNameCube("[Sales]")
-    ->setMeasures(["[Amount]"])
-    ->setDimensions(["[Product].[Product].[Name]"]);
+    ->setMeasures(["[Measures].[Amount]"])
+    ->setDimensions(["[Product].[Product].[Name]", "[Date].[Year]"]);
 
 echo $mdx->generateQuery();

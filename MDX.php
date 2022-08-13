@@ -58,7 +58,10 @@ class MDX implements iMDX
      */
     public function getMeasures(): string
     {
-        return implode(", ", $this->measures);
+        if (count($this->measures) > 1) {
+            return "{" . implode(", ", $this->measures) . "}";
+        }
+        return $this->measures[0];
     }
 
     /**
@@ -66,7 +69,10 @@ class MDX implements iMDX
      */
     public function getDimensions(): string
     {
-        return implode(", ", $this->dimensions);
+        if (count($this->dimensions) > 1) {
+            return "{" . implode(", ", $this->dimensions) . "}";
+        }
+        return $this->dimensions[0];
     }
 
     /**
